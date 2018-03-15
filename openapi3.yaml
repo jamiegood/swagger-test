@@ -3,7 +3,7 @@ servers:
   - url: 'http://petstore.swagger.io/v2'
 info:
   description: >-
-    This is a sample of a server Petstore server.  You can find out more about    
+    This is a sample of a server Petstore server.  You can find out more about
     Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net,
     #swagger](http://swagger.io/irc/).      For this sample, you can use the api
     key `special-key` to test the authorization     filters.
@@ -29,6 +29,32 @@ tags:
       description: Find out more about our store
       url: 'http://swagger.io'
 paths:
+  /jamie-end-point:
+    get:
+      description: "this is the best endpoint"
+      parameters:
+        - $ref: '#/components/parameters/languageheader'
+        - name: username
+          in: query
+          description: The user name for login
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'all good'
+        '401':
+          description: 'not found'
+      security:
+        - api_key: []
+      requestBody:
+        $ref: '#/components/requestBodies/Pet'
   /pet:
     post:
       tags:
@@ -40,9 +66,7 @@ paths:
         '405':
           description: Invalid input
       security:
-        - petstore_auth:
-            - 'write:pets'
-            - 'read:pets'
+        - api_key: []
       requestBody:
         $ref: '#/components/requestBodies/Pet'
     put:
@@ -112,7 +136,7 @@ paths:
         - pet
       summary: Finds Pets by tags
       description: >-
-        Muliple tags can be provided with comma separated strings. Use        
+        Muliple tags can be provided with comma separated strings. Use
         tag1, tag2, tag3 for testing.
       operationId: findPetsByTags
       parameters:
@@ -142,7 +166,7 @@ paths:
         '400':
           description: Invalid tag value
       security:
-        - petstore_auth:
+        - apikey:
             - 'write:pets'
             - 'read:pets'
       deprecated: true
@@ -328,7 +352,7 @@ paths:
         - store
       summary: Find purchase order by ID
       description: >-
-        For valid response try integer IDs with value >= 1 and <= 10.        
+        For valid response try integer IDs with value >= 1 and <= 10.
         Other values will generated exceptions
       operationId: getOrderById
       parameters:
@@ -360,7 +384,7 @@ paths:
         - store
       summary: Delete purchase order by ID
       description: >-
-        For valid response try integer IDs with positive integer value.        
+        For valid response try integer IDs with positive integer value.
         Negative or non-integer values will generate API errors
       operationId: deleteOrder
       parameters:
@@ -546,6 +570,15 @@ externalDocs:
   description: Find out more about Swagger
   url: 'http://swagger.io'
 components:
+  parameters:
+    languageheader:
+      name: Accept-Language
+      in: header
+      description: The user name for login
+      required: false
+      schema:
+        type: integer
+        format: int32
   requestBodies:
     UserArray:
       content:
@@ -567,14 +600,6 @@ components:
       description: Pet object that needs to be added to the store
       required: true
   securitySchemes:
-    petstore_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: 'http://petstore.swagger.io/oauth/dialog'
-          scopes:
-            'write:pets': modify pets in your account
-            'read:pets': read your pets
     api_key:
       type: apiKey
       name: api_key
@@ -657,6 +682,12 @@ components:
         - name
         - photoUrls
       properties:
+        something:
+          type: string
+          example: "jamie"
+        hw:
+          format: string
+          example: null
         id:
           type: integer
           format: int64
